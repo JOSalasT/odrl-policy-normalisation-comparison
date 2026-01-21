@@ -606,38 +606,38 @@ class PolicyComparer:
 
     @staticmethod
     def compare(filepath1, filepath2):
+        # Load contracts from local files as RDF graphs.
         parser1 = ContractParser()
         parser1.load(filepath1)
-
         parser2 = ContractParser()
         parser2.load(filepath2)
 
+        # Create a map between left operands and respective sets of constant values.
         values_per_constraints_1 = parser1.get_values_from_constraints()
         values_per_constraints_2 = parser2.get_values_from_constraints()
 
+        # Merge these maps to use when splitting intervals.
         merged_values = Utils.merge_key_multisets(values_per_constraints_1, values_per_constraints_2)
 
+        # Convert RDF graphs into Python data structures
         graph_parser1 = GraphParser.GraphParser(parser1.contract_graph)
         graph_parser2 = GraphParser.GraphParser(parser2.contract_graph)
-
         policy1 = graph_parser1.parse()
         policy2 = graph_parser2.parse()
 
+        # Normalise logical constraints to sets of rules, and reformulate simple constraints.
         policy1 = policy1.normalise()
         policy2 = policy2.normalise()
 
+        # Split intervals using the merged map.
         normal_policy1 = policy1.split_intervals(merged_values)
         normal_policy2 = policy2.split_intervals(merged_values)
 
-        # remove_prohibitions_1 = Policy(uid=normal_policy1.uid, type=normal_policy1.type, profiles=normal_policy1.profiles, permission=[permission for permission in normal_policy1.permission if permission not in normal_policy1.prohibition], prohibition=[], obligation=normal_policy1.obligation)
-        # remove_prohibitions_2 = Policy(uid=normal_policy1.uid, type=normal_policy1.type,
-        #                                profiles=normal_policy2.profiles,
-        #                                permission=[permission for permission in normal_policy2.permission if
-        #                                            permission not in normal_policy1.prohibition], prohibition=[],
-        #                                obligation=normal_policy2.obligation)
-
+        # Compute the effective policies by removing permissions that match prohibitions.
         effective_policy1 = PolicyComparer.diff(normal_policy1.permission, normal_policy1.prohibition)
         effective_policy2 = PolicyComparer.diff(normal_policy2.permission, normal_policy2.prohibition)
+
+        # Compute the overlap between policies, and two-way containment.
         ov = PolicyComparer.overlap(effective_policy1, effective_policy2)
         diff1 = PolicyComparer.diff(effective_policy1, effective_policy2)
         diff2 = PolicyComparer.diff(effective_policy2, effective_policy1)

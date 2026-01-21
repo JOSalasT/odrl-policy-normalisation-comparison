@@ -1,0 +1,10 @@
+/venv/
+.idea/*
+.venv/*
+__pycache__/*
+certs/*
+static/*
+templates/*
+*.json
+*.yml
+Dockerfile

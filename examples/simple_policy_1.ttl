@@ -1,0 +1,21 @@
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.com/iri/policy/0d2d03c8-e427-4082-b749-1856e281d672> a odrl:Policy ;
+    odrl:permission [ a odrl:Permission ;
+            odrl:action odrl:use ;
+            odrl:assignee <https://w3id.org/dpv/owl#AmbulanceProvider> ;
+            odrl:constraint [ odrl:leftOperand odrl:relativePosition ;
+                    odrl:operator odrl:lt ;
+                    odrl:rightOperand 18 ],
+                [ odrl:leftOperand <https://w3id.org/dpv/owl#hasJurisdiction> ;
+                    odrl:operator odrl:gteq ;
+                    odrl:rightOperand 59 ],
+                [ odrl:leftOperand <https://w3id.org/dpv/owl#hasJurisdiction> ;
+                    odrl:operator odrl:lteq ;
+                    odrl:rightOperand 93 ],
+                [ odrl:leftOperand odrl:relativePosition ;
+                    odrl:operator odrl:lteq ;
+                    odrl:rightOperand 14 ] ;
+            odrl:target <https://w3id.org/dpv/owl#PseudonymisedData> ] .
+

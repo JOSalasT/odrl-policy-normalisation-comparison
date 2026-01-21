@@ -1,0 +1,9 @@
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.com/iri/policy/0d2d03c8-e427-4082-b749-1856e281d672> a odrl:Policy ;
+    odrl:permission [ a odrl:Permission ;
+            odrl:action odrl:use ;
+            odrl:assignee <https://w3id.org/dpv/owl#AmbulanceProvider> ;
+            odrl:target <https://w3id.org/dpv/owl#PseudonymisedData> ] .
+

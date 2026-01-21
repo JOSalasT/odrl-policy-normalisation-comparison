@@ -1,0 +1,69 @@
+{
+  "odrl:prohibition": [
+    {
+      "odrl:action": "http://www.w3.org/ns/odrl/2/appendTo",
+      "odrl:assignee": "https://w3id.org/dpv/dpv-owl#Citizen",
+      "odrl:target": ["http://example.org/datasets/climateChangeData", "http://example.org/datasets/climateChangeData2"],
+      "odrl:constraint": [
+        {
+          "odrl:leftOperand": "purpose",
+          "odrl:operator": "http://www.w3.org/ns/odrl/2/eq",
+          "odrl:rightOperand": "https://w3id.org/dpv/dpv-owl#Personalisation"
+        },
+        {
+          "odrl:and": [
+            {
+              "odrl:or": [
+                {
+                  "odrl:leftOperand": "A",
+                  "odrl:operator": "http://www.w3.org/ns/odrl/2/eq",
+                  "odrl:rightOperand": 2
+                },
+                {
+                  "odrl:leftOperand": "B",
+                  "odrl:operator": "http://www.w3.org/ns/odrl/2/eq",
+                  "odrl:rightOperand": 3
+                },
+                {
+                  "odrl:leftOperand": "C",
+                  "odrl:operator": "http://www.w3.org/ns/odrl/2/eq",
+                  "odrl:rightOperand": 4
+                }
+              ]
+            },
+            {
+              "odrl:or": [
+                {
+                  "odrl:leftOperand": "D",
+                  "odrl:operator": "http://www.w3.org/ns/odrl/2/neq",
+                  "odrl:rightOperand": 2
+                },
+                {
+                  "odrl:leftOperand": "E",
+                  "odrl:operator": "http://www.w3.org/ns/odrl/2/eq",
+                  "odrl:rightOperand": 3
+                },
+                {
+                  "odrl:leftOperand": "F",
+                  "odrl:operator": "http://www.w3.org/ns/odrl/2/neq",
+                  "odrl:rightOperand": 4
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "@id": "http://example.org/policy-79f7e6ba-daff-4919-940f-a1ad1344a97a",
+  "@context": {
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "xsd": "http://www.w3.org/2001/XMLSchema#",
+        "skos": "http://www.w3.org/2004/02/skos/core#",
+        "odrl": "http://www.w3.org/ns/odrl/2/",
+        "dpv": "https://w3id.org/dpv/owl#",
+        "foaf": "http://xmlns.com/foaf/0.1/"
+      },
+  "@type": "http://www.w3.org/ns/odrl/2/Policy"
+}

@@ -1,6 +1,5 @@
 from rdflib import Graph, Namespace, URIRef
 from rdflib.namespace import RDF
-from datetime import datetime
 import sys
 
 import Utils

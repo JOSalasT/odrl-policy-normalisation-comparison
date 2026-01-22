@@ -1,5 +1,3 @@
-from typing import List
-
 import rdflib
 from rdflib import Graph, RDF
 

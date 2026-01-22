@@ -7,8 +7,6 @@ Contributors:
 
 """
 
-from typing import List
-
 from Constraint import Constraint
 from Interfaces import RefinableInterface
 

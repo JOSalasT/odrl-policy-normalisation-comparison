@@ -1,7 +1,6 @@
 # Policy Comparison and Normalisation
 
 This code allows for the normalisation of ODRL policies containing Permissions and Prohibitions in order to check for policy containment, equivalence or overlap.
-The data structures for ODRL policies come from the [UPCAST Policy Engine](https://github.com/EU-UPCAST/PolicyEngine.git)
 
 ## Features
 
@@ -159,9 +158,43 @@ Is (1) contained in (2)? False
 Is (2) contained in (1)? True
 Are (1) and (2) equivalent? False
 ```
+The same result can be achieved through the command line by running: `python demo.py compare examples/simple_permissions.ttl examples/simple_permissions+prohibitions_2.ttl`.
+
+The next example shows two policies A (examples/simple_permissionsA.ttl) and B (examples/simple_permissionsB.ttl) that allow to "watermark https://w3id.org/dpv/owl#UnverifiedData"
+provided the absolute spacial position is:
+- A  P[70,90] (between 70 and 90)
+- B  P[70,80] + P[80,90] (between 70 and 80 or between 80 and 90)
+
+Although the intervals in B are split into two, it is evident that they allow the same actions. Therefore, the output is:
+
+```
+Number of overlapping permissions: 6
+Is (1) contained in (2)? True
+Is (2) contained in (1)? True
+Are (1) and (2) equivalent? True
+```
+
+Finally, an example with two policies Ap (examples/simple_permissionsAp.ttl) and Bp (examples/simple_permissionsBp.ttl) with permissions that allow to "watermark https://w3id.org/dpv/owl#UnverifiedData"
+provided the absolute spacial position is:
+
+- For Ap P[60,90] (between 60 and 90) - F(70,80] (between 70 and 80, not including 70)
+- For Bp  P[60,70] (between 60 and 70) + P(80,90] (between 80 and 90, not including 80)
+
+Although these are different policies, it is evident that they restrict the same values. Therefore, the output is:
+
+```
+Number of overlapping permissions: 5
+Is (1) contained in (2)? True
+Is (2) contained in (1)? True
+Are (1) and (2) equivalent? True
+```
 ## Development
 
 To contribute to this project, feel free to submit pull requests. Make sure to test your changes thoroughly.
+
+## Acknowledgements
+
+Credits to [Semih Yumuşak](https://github.com/semihyumusak) for the data structures for ODRL policies and [Paolo Pareti](https://github.com/paolo7) for the ODRL parser.
 
 ## License
 

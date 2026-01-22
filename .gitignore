@@ -5,6 +5,6 @@ __pycache__/*
 certs/*
 static/*
 templates/*
-*.json
+openapi.json
 *.yml
 Dockerfile

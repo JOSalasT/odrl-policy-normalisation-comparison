@@ -194,7 +194,7 @@ To contribute to this project, feel free to submit pull requests. Make sure to t
 
 ## Acknowledgements
 
-Credits to [Semih Yumuşak](https://github.com/semihyumusak) for the data structures for ODRL policies and [Paolo Pareti](https://github.com/paolo7) for the ODRL parser.
+Excluded for anonymisation.
 
 ## License
 

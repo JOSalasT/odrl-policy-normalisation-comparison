@@ -12,6 +12,13 @@ This code allows for the normalisation of ODRL policies containing Permissions a
 - Python 3.8+
 - RDFLib 7.0.0
 
+## Limitations
+
+This implementation is a work in progress, and the following main limitations should be noted:
+
+- Set operators in constraints and refinements, and the ODRL consequence, remedies and permission-duties rules are not supported.
+- The support for ODRL targets and assignees is limited, and at the moment partial overlaps of these features migth not be correctly detected.
+
 ## Usage
 
 A ContractParser element can be used to parse an ODRL policy in some RDF standard format and get an RDFLib graph.

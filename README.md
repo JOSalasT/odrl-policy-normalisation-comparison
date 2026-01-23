@@ -16,7 +16,7 @@ This code allows for the normalisation of ODRL policies containing Permissions a
 
 This implementation is a work in progress, and the following main limitations should be noted:
 
-- Set operators in constraints and refinements, and the ODRL consequence, remedies and permission-duties rules are not supported.
+- Set operators in constraints and refinements, and the ODRL consequence, remedies and duties rules are not supported.
 - The support for ODRL targets and assignees is limited, and at the moment partial overlaps of these features migth not be correctly detected.
 
 ## Usage

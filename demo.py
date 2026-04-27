@@ -7,9 +7,14 @@ from PolicyComparer import PolicyComparer
 
 if __name__ == '__main__':
     args = sys.argv[1:]
+    out_file = None
+    if "-f" in args:
+        args = args[0:args.index("-f")]
+        if len(args) > args.index("-f"):
+            out_args = args[args.index("-f") + 1]
     if len(args) < 1:
         print("No command specified.")
-        print("usage: command file1 [file2...]")
+        print("usage: command file1 [file2...] [-f out_file] ")
         print("command is one of 'normalise', 'normalise_prohibitions', 'compare'")
         print("'normalise' requires exactly one argument. This will normalise simple and logical constraints, but will not split intervals or remove prohibitions. ")
         print("'normalise_prohibitions' requires at least one file. This will normalise, split intervals and remove prohibitions that match permissions.")
@@ -24,7 +29,15 @@ if __name__ == '__main__':
         graph_parser = GraphParser(contract_parser.contract_graph)
         policy = graph_parser.parse()
         normal_policy = policy.normalise()
-        print(normal_policy)
+        if out_file is None:
+            print(normal_policy)
+        else:
+            try:
+                with open(out_file, 'w') as outfile:
+                    outfile.write(str(normal_policy))
+            except FileNotFoundError:
+                print(normal_policy)
+        sys.exit(0)
     elif args[0] == 'normalise_prohibitions':
         args = sys.argv[2:]
         if len(args) < 2:
@@ -43,7 +56,15 @@ if __name__ == '__main__':
                 values_per_constraints = Utils.merge_key_multisets(values_per_constraints,
                                                                    contract_parser.get_values_from_constraints())
             normal_policy = normal_policy.split_intervals(values_per_constraints)
-        print(normal_policy)
+        if out_file is None:
+            print(normal_policy)
+        else:
+            try:
+                with open(out_file, 'w') as outfile:
+                    outfile.write(str(normal_policy))
+            except FileNotFoundError:
+                print(normal_policy)
+        sys.exit(0)
     elif args[0] == 'compare':
         if len(args) < 3:
             print("Not enough arguments")
@@ -53,10 +74,11 @@ if __name__ == '__main__':
         print(f"Is (1) contained in (2)? {comparer[1]}")
         print(f"Is (2) contained in (1)? {comparer[2]}")
         print(f"Are (1) and (2) equivalent? {comparer[1] and comparer[2]}")
+        sys.exit(0)
     else:
         print("No valid command specified.")
-        print("usage: command file1 [file2...]")
-        print("command is one of 'normalise', 'normalise_prohibitions', 'compare'")
-        print("'normalise' requires exactly one argument. This will normalise simple and logical constraints, but will not split intervals or remove prohibitions. ")
-        print("'normalise_prohibitions' requires at least one file. This will normalise, split intervals and remove prohibitions that match permissions.")
-        print("'compare' requires exactly 2 arguments. This will compute the overlap between the two policies and two-way containment.")
+    print("usage: command file1 [file2...] [-f out_file] ")
+    print("command is one of 'normalise', 'normalise_prohibitions', 'compare'")
+    print("'normalise' requires exactly one argument. This will normalise simple and logical constraints, but will not split intervals or remove prohibitions. ")
+    print("'normalise_prohibitions' requires at least one file. This will normalise, split intervals and remove prohibitions that match permissions.")
+    print("'compare' requires exactly 2 arguments. This will compute the overlap between the two policies and two-way containment.")

@@ -30,13 +30,19 @@ class PolicyComparer:
         policy1 = policy1.normalise()
         policy2 = policy2.normalise()
 
-        # Split intervals using the merged map.
-        normal_policy1 = policy1.split_intervals(merged_values)
-        normal_policy2 = policy2.split_intervals(merged_values)
+        if len(merged_values) == 0:
+            normal_policy1 = policy1
+            normal_policy2 = policy2
+        else:
+            # Split intervals using the merged map.
+            normal_policy1 = policy1.split_intervals(merged_values)
+            normal_policy2 = policy2.split_intervals(merged_values)
 
         # Compute the effective policies by removing permissions that match prohibitions.
         effective_policy1 = PolicyComparer.diff(normal_policy1.permission, normal_policy1.prohibition)
         effective_policy2 = PolicyComparer.diff(normal_policy2.permission, normal_policy2.prohibition)
+
+        #TODO: Add a check here that if an effective policy has no permissions, then nothing is contained in it.
 
         # Compute the overlap between policies, and two-way containment.
         ov = PolicyComparer.overlap(effective_policy1, effective_policy2)

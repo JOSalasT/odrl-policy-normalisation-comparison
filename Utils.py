@@ -19,6 +19,6 @@ def string_to_element(value):
             return int(value)
     else:
         try:
-            return datetime.strptime(value, "%d-%m-%Y")
+            return datetime.fromisoformat(value).timestamp()
         except ValueError:
             return value

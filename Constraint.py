@@ -8,6 +8,7 @@ Contributors:
 """
 import itertools
 import math
+import datetime
 
 ODRL_IRI = "http://www.w3.org/ns/odrl/2/"
 
@@ -306,6 +307,8 @@ class LogicalConstraint(Constraint):
                     if normal_constraint.operator == 'or':
                         for c in normal_constraint.constraints:
                             sub_constraints.append(c)
+                    elif normal_constraint.operator == 'and':
+                        sub_constraints.append(normal_constraint)
             return LogicalConstraint(operator=self.operator, constraints=sub_constraints)
         elif self.operator == 'and':
             union_constraints = []
@@ -358,6 +361,8 @@ class LogicalConstraint(Constraint):
                 max_value = math.inf
                 exact_value = None
                 for constraint in key_map[key]:
+                    if isinstance(constraint.rightOperand, str):
+                        constraint.rightOperand = datetime.datetime.fromisoformat(constraint.rightOperand).timestamp()
                     if constraint.operator == ODRL_IRI + "eq":
                         if exact_value is None:
                             exact_value = constraint.rightOperand
@@ -365,9 +370,15 @@ class LogicalConstraint(Constraint):
                             # raise ValueError("More than one equality per left operand.")
                             return None
                     elif constraint.operator == ODRL_IRI + "gt":
-                        min_value = max(constraint.rightOperand, min_value)
+                        if min_value == -math.inf:
+                            min_value = constraint.rightOperand
+                        else:
+                            min_value = max(constraint.rightOperand, min_value)
                     elif constraint.operator == ODRL_IRI + "lt":
-                        max_value = min(constraint.rightOperand, max_value)
+                        if max_value == math.inf:
+                            max_value = constraint.rightOperand
+                        else:
+                            max_value = min(constraint.rightOperand, max_value)
                 if exact_value is not None:
                     if max_value == math.inf and min_value == -math.inf:
                         simplified_intervals.append(

@@ -180,7 +180,10 @@ class Rule:
         if and_constraint.operator == "or":
             cqs = and_constraint.constraints
             for c in cqs:
-                ans.append(c)
+                if isinstance(c, LogicalConstraint) and c.operator == "and":
+                    ans.append(c.constraints)
+                else:
+                    ans.append(c)
         elif and_constraint.operator == "and":
             cqs = [and_constraint.constraints]
             return cqs
@@ -545,9 +548,9 @@ class Policy:
 
     def __str__(self):
         ans = f"""
-        permission: {"".join(str(permission) + "\n" for permission in self.permission)}
-        prohibition: {"".join(str(prohibition) + "\n" for prohibition in self.prohibition)}
-        obligation: {"".join(str(obligation) + "\n" for obligation in self.obligation)}
+        permission: {"".join(str(permission) for permission in self.permission)}
+        prohibition: {"".join(str(prohibition) for prohibition in self.prohibition)}
+        obligation: {"".join(str(obligation) for obligation in self.obligation)}
         """
         return ans
 

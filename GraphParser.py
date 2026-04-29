@@ -1,8 +1,7 @@
 import rdflib
 from rdflib import Graph, RDF
 
-import Refinables
-import Utils
+import Refinables, Utils
 from Refinables import Refinable
 from Constraint import Constraint, LogicalConstraint
 from Policy import Policy, Permission, Prohibition, Obligation

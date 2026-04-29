@@ -19,6 +19,19 @@ def string_to_element(value):
             return int(value)
     else:
         try:
-            return datetime.fromisoformat(value).timestamp()
+            return str(datetime.fromisoformat(value))
         except ValueError:
             return value
+        
+def string_to_rdflib_node(value):
+    from rdflib import URIRef, Literal
+    if isinstance(value, str):
+        import re
+        #TODO: Implement datatypes maybe.
+        uri_pattern = re.compile(r'\b[a-zA-Z][a-zA-Z0-9+.-]*://[^\s<>"\'()]+')
+        if uri_pattern.match(value):
+            return URIRef(value)
+        else:
+            return Literal(value)
+    else:
+        return Literal(str(value))

@@ -9,10 +9,10 @@ Added normalisation methods.
 """
 from typing import Union, Optional
 
+from rdflib import BNode
+
 import Utils
-from Refinables import Action
-from Refinables import AssetCollection
-from Refinables import PartyCollection
+from Refinables import Action, AssetCollection, PartyCollection
 from Constraint import Constraint, LogicalConstraint, ArithmeticConstraint
 
 
@@ -35,6 +35,8 @@ class Rule:
 
         if isinstance(action, dict):
             self.action = [Action(**action)]
+        elif action is None:
+            self.action = []
         else:
             self.action = action
 
@@ -211,6 +213,25 @@ class Rule:
                 sub_values = c.get_values_per_left_operand()
                 ans = Utils.merge_key_multisets(ans, sub_values)
         return ans
+    
+    def to_triples(self, uri):
+        from rdflib import Namespace
+
+        ODRL = Namespace("http://www.w3.org/ns/odrl/2/")
+        triples = []
+        for action in self.action:
+            triples.append((uri, ODRL.action, action.to_node()))
+        for target in self.target:
+            triples.append((uri, ODRL.target, target.to_node()))
+        for assigner in self.assigner:
+            triples.append((uri, ODRL.assigner, assigner.to_node()))
+        for assignee in self.assignee:
+            triples.append((uri, ODRL.assignee, assignee.to_node()))
+        for constraint in self.constraint:
+            constraint_bnode = BNode()
+            triples.append((uri, ODRL.constraint, constraint_bnode))
+            triples.extend(constraint.to_triples(constraint_bnode))
+        return triples
 
 
 class Duty(Rule):
@@ -602,4 +623,34 @@ class Policy:
                 new_prohibitions.append(split_prohibition)
         return Policy(uid=self.uid, type=self.type, profiles=self.profiles, permission=new_permissions,
                       prohibition=new_prohibitions, obligation=self.obligation)
+    
+    def to_rdflib_graph(self):
+        from rdflib import Graph, Namespace, URIRef, Literal
+        from rdflib.namespace import RDF
+
+        ODRL = Namespace("http://www.w3.org/ns/odrl/2/")
+        graph = Graph()
+
+        policy_uri = URIRef(f"http://example.com/policy/{self.uid}")
+        graph.add((policy_uri, RDF.type, ODRL.Policy))
+
+        for permission in self.permission:
+            permission_uri = URIRef(f"{policy_uri}/permission/{id(permission)}")
+            graph.add((policy_uri, ODRL.permission, permission_uri))
+            for triple in permission.to_triples(permission_uri):
+                graph.add(triple)
+
+        for prohibition in self.prohibition:
+            prohibition_uri = URIRef(f"{policy_uri}/prohibition/{id(prohibition)}")
+            graph.add((policy_uri, ODRL.prohibition, prohibition_uri))
+            for triple in prohibition.to_triples(prohibition_uri):
+                graph.add(triple)
+
+        for obligation in self.obligation:
+            obligation_uri = URIRef(f"{policy_uri}/obligation/{id(obligation)}")
+            graph.add((policy_uri, ODRL.obligation, obligation_uri))
+            for triple in obligation.to_triples(obligation_uri):
+                graph.add(triple)
+
+        return graph
 

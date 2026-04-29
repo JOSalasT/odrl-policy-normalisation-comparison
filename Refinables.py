@@ -63,6 +63,10 @@ class Refinable(RefinableInterface):
         for refinement in self.refinement:
             continue
 
+    def to_node(self):
+        from rdflib import URIRef
+        return URIRef(self.value)
+
 class Action(Refinable):
     def __init__(self, **args):
         """
@@ -74,6 +78,9 @@ class Action(Refinable):
         :param implies: Optional list of action that are implied by this Action.
         """
         super().__init__(**args)
+       
+    def __str__(self):
+        return super.__str__(self)
 
 
 
@@ -86,6 +93,9 @@ class AssetCollection(Refinable):
         :param refinements: Optional list of Constraint objects that refine the conditions of the AssetCollection.
         """
         super().__init__(**args)
+        
+    def __str__(self):
+        return super.__str__(self)
 
 
 
@@ -98,4 +108,7 @@ class PartyCollection(Refinable):
         :param refinements: Optional list of Constraint objects that refine the conditions of the PartyCollection.
         """
         super().__init__(**args)
+        
+    def __str__(self):
+        return super.__str__(self)
 

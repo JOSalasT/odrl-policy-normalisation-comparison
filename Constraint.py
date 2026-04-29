@@ -10,7 +10,12 @@ import itertools
 import math
 import datetime
 
+import rdflib
+
+import Utils
+
 ODRL_IRI = "http://www.w3.org/ns/odrl/2/"
+ODRL = rdflib.Namespace(ODRL_IRI)
 
 
 class Constraint:
@@ -116,6 +121,15 @@ class ArithmeticConstraint(Constraint):
                 interval_2 = ArithmeticConstraint(self.leftOperand, ODRL_IRI + "lt", self.rightOperand)
                 or_constraint = LogicalConstraint(operator="or", constraints=[interval_1, interval_2])
                 return or_constraint
+            elif isinstance(self.rightOperand, str):
+                try:
+                    timestamp = datetime.datetime.fromisoformat(self.rightOperand).timestamp()
+                    interval_1 = ArithmeticConstraint(self.leftOperand, ODRL_IRI + "gt", timestamp)
+                    interval_2 = ArithmeticConstraint(self.leftOperand, ODRL_IRI + "lt", timestamp)
+                    or_constraint = LogicalConstraint(operator="or", constraints=[interval_1, interval_2])
+                    return or_constraint
+                except:
+                    return self
             else:
                 return self
         else:
@@ -239,6 +253,15 @@ class ArithmeticConstraint(Constraint):
                             new_final_constraints.append(c + or_interval)
                     final_intervals = new_final_constraints
         return Constraint.create(operator="or", constraints=final_intervals)
+    
+    def to_triples(self, subject):
+        if self.leftOperand == ODRL_IRI + "dateTime":
+            proper_datetime = datetime.datetime.fromtimestamp(self.rightOperand, tz=datetime.timezone.utc).isoformat()
+            return [(subject, ODRL.leftOperand, Utils.string_to_rdflib_node(self.leftOperand)), (subject, ODRL.operator, Utils.string_to_rdflib_node(self.operator)),
+                (subject, ODRL.rightOperand, Utils.string_to_rdflib_node(proper_datetime))]
+        else:
+            return [(subject, ODRL.leftOperand, Utils.string_to_rdflib_node(self.leftOperand)), (subject, ODRL.operator, Utils.string_to_rdflib_node(self.operator)),
+                (subject, ODRL.rightOperand, Utils.string_to_rdflib_node(self.rightOperand))]
 
 
 class LogicalConstraint(Constraint):
@@ -362,7 +385,10 @@ class LogicalConstraint(Constraint):
                 exact_value = None
                 for constraint in key_map[key]:
                     if isinstance(constraint.rightOperand, str):
-                        constraint.rightOperand = datetime.datetime.fromisoformat(constraint.rightOperand).timestamp()
+                        try:
+                            constraint.rightOperand = datetime.datetime.fromisoformat(constraint.rightOperand).timestamp()
+                        except ValueError:
+                            constraint.rightOperand = constraint.rightOperand
                     if constraint.operator == ODRL_IRI + "eq":
                         if exact_value is None:
                             exact_value = constraint.rightOperand
@@ -406,6 +432,14 @@ class LogicalConstraint(Constraint):
                 else:
                     simplified_intervals.append(constraint)
             return LogicalConstraint(operator="or", constraints=simplified_intervals)
+        
+    def to_triples(self, subject):
+        triples = []
+        for constraint in self.constraints:
+            constraint_bnode = rdflib.BNode()
+            triples.append((subject, ODRL.operator, constraint_bnode))
+            triples.extend(constraint.to_triples(constraint_bnode))
+        return triples
 
     # def split_intervals(self, value_map):
     #     #Note that this will only work correctly if this is a CQ.
